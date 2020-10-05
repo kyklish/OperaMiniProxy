@@ -1,0 +1,4 @@
+<resources>
+	<string name="app_name">Opera Mini Proxy</string>
+    <string name="text_description">Share link to this app and it will open chooser dialog window with only one app "Opera Mini", Android will automatically opens it.</string>
+</resources>
