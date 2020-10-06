@@ -7,37 +7,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import kotlin.system.exitProcess
 
 class MainActivity : Activity() {
-	override fun onPause() {
-		super.onPause()
-		Log.i("OperaMiniProxy", "onPause Activity")
-	}
-
-	override fun onDestroy() {
-		super.onDestroy()
-		Log.i("OperaMiniProxy", "onDestroy Activity")
-	}
-
-	override fun onStart() {
-		super.onStart()
-		Log.i("OperaMiniProxy", "onStart Activity")
-	}
-
-	override fun onStop() {
-		super.onStop()
-		Log.i("OperaMiniProxy", "onStop Activity")
-	}
-
-	override fun onResume() {
-		super.onResume()
-		Log.i("OperaMiniProxy", "onResume Activity")
-	}
-
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
-		Log.i("OperaMiniProxy", "onCreate Activity")
 
 		when (intent?.action) {
 			Intent.ACTION_SEND -> {
@@ -54,7 +27,6 @@ class MainActivity : Activity() {
 
 	private fun handleSendAction(intent: Intent) {
 		var text = ""
-		var isFound = false
 
 		intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
 			text = it
@@ -66,8 +38,13 @@ class MainActivity : Activity() {
 		// Build the intent
 		val browserIntent = Intent(Intent.ACTION_VIEW, webpage)
 
+/*
+		// createChooser not work, if you set some browser as default. In that case default browser
+		// will always open all your URLs, even if "intent.component" defined.
+
 		// Code from "Stack Overflow". There was example for several apps, I cut it to one.
 		// I saved example to "android - Intent.createChooser.rar"
+		var isFound = false
 		val resolveInfoList = packageManager.queryIntentActivities(browserIntent, 0)
 		for (resInfo in resolveInfoList) {
 			val packageName = resInfo.activityInfo.packageName
@@ -83,10 +60,29 @@ class MainActivity : Activity() {
 			val chooserIntent = Intent.createChooser(browserIntent, null)
 			startActivity(chooserIntent) // Chooser is always safe to call
 		} else {
-			Toast.makeText(this@MainActivity, "Opera Mini not installed!", Toast.LENGTH_SHORT)
-				.show()
+			toast("Opera Mini not found!")
+		}
+*/
+
+		// https://www.apkmirror.com/ -> Opera Mini -> Android Studio -> Build -> Analyze APK... ->
+		// -> AndroidManifest -> android.intent.action.VIEW
+		browserIntent.component = ComponentName(
+			"com.opera.mini.native",
+			"com.opera.mini.android.Browser"
+		)
+		// More variants here: "android - Determining if an Activity exists on the current device_ - Stack Overflow.rar"
+		// intent.resolveActivity(...) founds even non-existing activity!!! Sic... Use info-variant.
+		if (browserIntent.resolveActivityInfo(packageManager, 0) != null) {
+			logd("Opera intent resolved")
+			startActivity(browserIntent)
+		} else {
+			logd("Opera intent not resolved")
+			toast("Opera Mini not found!")
 		}
 
+		// Same thing can be done by activity attribute android:noHistory="true" in AndroidManifest.xml.
+		// It will work only if activity was replaced by another activity. This does not happen,
+		// when intent not resolved, blank activity will stay on screen. So... kill them all manually.
 		killMyApp()
 	}
 
@@ -98,4 +94,12 @@ class MainActivity : Activity() {
 		// but the allocated memory will still be in use by your phone, so... if you want a clean and
 		// really quit of an app, use both of them.
 	}
+}
+
+fun Activity.toast(message: String) {
+	Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Activity.logd(message: String) {
+	if (BuildConfig.DEBUG) Log.d(this::class.java.simpleName, message)
 }
