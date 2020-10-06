@@ -71,7 +71,8 @@ class MainActivity : Activity() {
 			"com.opera.mini.android.Browser"
 		)
 		// More variants here: "android - Determining if an Activity exists on the current device_ - Stack Overflow.rar"
-		// intent.resolveActivity(...) founds even non-existing activity!!! Sic... Use info-variant.
+		// intent.resolveActivity(...) get name from "browserIntent.component" or OS. In our case it
+		// will always return what we put in "browserIntent.component". Sic... Use info-variant.
 		if (browserIntent.resolveActivityInfo(packageManager, 0) != null) {
 			logd("Opera intent resolved")
 			startActivity(browserIntent)
