@@ -29,8 +29,15 @@ class MainActivity : Activity() {
 		var text = ""
 
 		intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-			text = it
-			Log.i("OperaMiniProxy", "EXTRA_TEXT: $text")
+			logd("EXTRA_TEXT: $it")
+			// Inoreader shares bad link. For example: "Site title http://www.site.com"
+			// Remove all text before "http" or "https"
+			val regex = "https?://.*".toRegex(RegexOption.IGNORE_CASE)
+			val match = regex.find(it)
+			match?.let {
+				text = match.value.trim()
+				logd("EXTRA_TEXT_CLEARED: $text")
+			}
 		}
 
 		val webpage = Uri.parse(text)
