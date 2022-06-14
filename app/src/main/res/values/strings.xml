@@ -1,5 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?><!DOCTYPE resources [<!ENTITY app_name "Opera Proxy Mini">]>
+
 <resources>
-	<string name="app_name">Opera Mini Proxy</string>
+	<string name="app_name_debug">&app_name; Debug</string>
+	<string name="app_name_release">&app_name;</string>
 	<string name="text_description">Share link to this app and it will create
 		explicit intent to \"Opera Mini\".</string>
 </resources>
